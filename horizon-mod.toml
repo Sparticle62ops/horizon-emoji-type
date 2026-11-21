@@ -1,0 +1,32 @@
+id = "emoji_type"
+name = "Emoji Type"
+version = "1.0.0"
+description = """Exact 1:1 Rust port of [Emoji Type](https://github.com/Norbiros/emojitype)
+(GPL-3.0-only, Norbiros, co-author CyborgCabbage). Type `:shortcode:` in chat and the sent
+message carries its emoji instead: three packs ship with the mod (letters, Minecraft symbols and
+text-art faces), user packs live in config/emoji_type/emoji_packs as YAML files, and the config
+tracks which packs are enabled (config/emoji_type/config.json, with the original's v2 legacy
+migration from emojitype.json included).
+
+The mod API wires the original's chat replacement on the client_chat hook, so it works with no
+other mod installed; slash commands keep bypassing it, as in the original.
+
+Known seams (engine-stage; tracked):
+- the original replaces codes while you type and offers chat suggestions; the mod API has no
+  edit-box text or suggestion hook, so the replacement happens when the message is sent instead.
+- the in-game pack editor and config screen are unported; packs are edited in the YAML files.
+
+Licence: GPL-3.0-only, carried from the original (LICENSE). Sources:
+https://github.com/Sparticle62ops/horizon-emoji-type
+"""
+authors = ["Norbiros", "CyborgCabbage", "sparticle"]
+license = "GPL-3.0-only"
+homepage = "https://github.com/Sparticle62ops/horizon-emoji-type"
+api = "0.2"
+side = "client"
+capabilities = ["registries"]
+
+[native]
+game = "26.3"
+horizon = "f00125f61f794aaa3d4e950d301f353b35b6ee3d"
+mixins = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0"

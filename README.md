@@ -1,16 +1,43 @@
-# emoji_type
+# Emoji Type for Horizon
 
-Typing a `:code:` shortcode in Horizon chat replaces it with its emoji when the
-message is sent. A Rust port of [EmojiType](https://modrinth.com/mod/emojitype)
-by Norbiros, licensed GPL-3.0 like the original.
+An exact 1:1 Rust port of [Emoji Type](https://github.com/Norbiros/emojitype)
+by Norbiros (co-author CyborgCabbage), GPL-3.0-only, carried from the
+original with credit. Type a `:shortcode:` in chat and the sent message
+carries its emoji instead.
 
-The three emoji packs bundled with the original mod (minecraft, text art faces,
-letters) ship inside this mod and are copied into the mod's data folder
-(`.horizon-mod-data/emoji_type/emoji_packs/`) on first load. Every `.yaml` or
-`.yml` pack in that folder is loaded alongside them, so custom packs can be
-dropped in the same way the original loads them from its config.
+## How it works
 
-Phase 1 covers the send-time replacement and pack loading. The original also
-replaces codes in the edit box as they are typed and shows code suggestions;
-that in-field stage, plus the pack config UI, lands as a later phase on the
-screen hooks.
+- **Packs** (`packs.rs` <- PackLoader.java, EmojiPack.java, BundledPack,
+  LocalPack, DefaultPackGenerator.java, PackType.java): every `*.yaml`/
+  `*.yml` file in `config/emoji_type/emoji_packs` is a pack keyed by file
+  name, with the same header (`name`, `description`, `type`) and
+  `code: "emoji"` entries as the original. The three bundled packs
+  (letters, Minecraft symbols, text-art faces) copy into the folder on
+  first run and are never overwritten.
+- **Config** (`config.rs` <- ConfigManager.java, Config.java):
+  `config/emoji_type/config.json` holds `enabledPacks` (in file order) and
+  `version`; an empty list fills with every pack name on first load. The
+  original's v2 legacy migration is included: an old `config/emojitype.json`
+  with a known-default hash migrates to the defaults, anything else becomes
+  a `legacy_emojis.yaml` "Legacy Emojis" pack, and the old file is backed up
+  to `emojitype.legacy.json` and removed.
+- **Replacement** (`emoji.rs` <- EmojiCode.java, reloadActiveEmojiCodes):
+  every active `:shortcode:` in the outgoing chat message becomes its
+  emoji, in pack order; entries with an empty code or emoji are dropped,
+  as there.
+
+## Wiring
+
+The mod API runs the original's init on `client_setup` and the replacement
+on `client_chat`, so it works with no other mod installed (the previous
+build's replacement rode a pinned mixin that needed another mod's chat
+subscriber). Slash commands keep bypassing the hook, as in the original,
+where the NeoForge `ClientChatEvent` does not fire for commands.
+
+## Seams
+
+- The original replaces codes while you type and offers chat suggestions;
+  the mod API has no edit-box text or suggestion hook, so the replacement
+  happens when the message is sent instead.
+- The in-game pack editor and config screen are unported; packs are edited
+  in the YAML files.

@@ -4,8 +4,13 @@ version = "1.0.0"
 edition = "2024"
 license = "GPL-3.0-only"
 publish = false
-description = "Emoji shortcodes in Horizon chat: a Rust port of EmojiType."
+description = "Type `:shortcode:` in chat and the sent message carries its emoji: an exact 1:1 Rust port of Emoji Type."
 
-# The mod logic: the same file the bundle adds to the game.
 [lib]
-path = "runtime.rs"
+path = "src/lib.rs"
+
+[dependencies]
+horizon-mod-api = { path = ".horizon/sdk/api/crates/horizon-mod-api" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+md-5 = "0.10"
